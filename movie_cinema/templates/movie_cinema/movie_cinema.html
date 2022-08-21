@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}<title> 스파르타 피디아 </title>{% endblock %}
+    
+    
+{% block css %} 
+    <style>
+        .mytitle {
+            width: 100%;
+            height: 250px;
+
+            background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://movie-phinf.pstatic.net/20210715_95/1626338192428gTnJl_JPEG/movie_image.jpg');
+            background-position: center;
+            background-size: cover;
+
+            color: white;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mytitle > button {
+            width: 200px;
+            height: 50px;
+
+            background-color: transparent;
+            color: white;
+
+            border-radius: 50px;
+            border: 1px solid white;
+
+            margin-top: 10px;
+        }
+
+        .mytitle > button:hover {
+            border: 2px solid white;
+        }
+
+        .mycomment {
+            color: gray;
+        }
+
+        .mycards {
+            margin: 20px auto 0px auto;
+            width: 95%;
+            max-width: 1200px;
+        }
+
+        .mypost {
+            width: 95%;
+            max-width: 500px;
+            margin: 20px auto 0px auto;
+            padding: 20px;
+            box-shadow: 0px 0px 3px 0px gray;
+
+            display: none;
+        }
+
+        .mybtns {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+
+            margin-top: 20px;
+        }
+
+        .mybtns > button {
+            margin-right: 10px;
+        }
+    </style>
+{% endblock %}
+{% block script %}
+    <script>
+        $(document).ready(function () {
+            listing();
+        });
+
+        function listing() {
+            $.ajax({
+                type: 'GET',
+                url: '/movieCinema/movie',
+                data: {},
+                success: function (movies) {
+                    for (const movie of movies) {
+                        console.log(movie);
+                        const imgSrc = movie['image'];
+                        const title = movie['title'];
+                        const desc = movie['desc'];
+                        const nStar = movie['star'];
+                        const comment = movie['comment'];
+
+                        // html 생성
+                        const movie_html = getMovieHtml(imgSrc, title, desc, nStar, comment);
+                        console.log(movie_html);
+                        // html append
+                        $('#cards-box').append(movie_html);
+                    }
+                }
+            })
+        }
+        function getMovieHtml(imgSrc, title, desc, nStar, comment) {
+            const star = '⭐'.repeat(nStar);    // 별표를 개수만큼 생성한다.
+            return `<div class="col">
+                        <div class="card h-100">
+                            <img src="${imgSrc}"
+                                class="card-img-top">
+                            <div class="card-body">
+                                <h5 class="card-title">${title}</h5>
+                                <p class="card-text">${desc}</p>
+                                <p>${star}</p>
+                                <p class="mycomment">${comment}</p>
+                            </div>
+                        </div>
+                    </div>`
+        }
+
+        function posting() {
+            const url = $('#url').val();
+            const star = $('#star').val();
+            const comment = $('#comment').val();
+            $.ajax({
+                type: 'POST',
+                url: '/movieCinema/movie',
+                data: {
+                    url: url,
+                    star: star,
+                    comment: comment
+                },
+                success: function (response) {
+                    window.location.reload();
+                }
+            });
+        }
+
+        function open_box() {
+            $('#post-box').show()
+        }
+
+        function close_box() {
+            $('#post-box').hide()
+        }
+    </script>
+{% endblock %}
+    
+    
+
+{% block content %}
+    <div class="mytitle">
+        <h1>내 생애 최고의 영화들</h1>
+        <button onclick="open_box()">영화 기록하기</button>
+    </div>
+    <div class="mypost" id="post-box">
+        <div class="form-floating mb-3">
+            <input id="url" type="email" class="form-control" placeholder="name@example.com">
+            <label>영화URL</label>
+        </div>
+        <div class="input-group mb-3">
+            <label class="input-group-text" for="inputGroupSelect01">별점</label>
+            <select class="form-select" id="star">
+                <option selected>-- 선택하기 --</option>
+                <option value="1">⭐</option>
+                <option value="2">⭐⭐</option>
+                <option value="3">⭐⭐⭐</option>
+                <option value="4">⭐⭐⭐⭐</option>
+                <option value="5">⭐⭐⭐⭐⭐</option>
+            </select>
+        </div>
+        <div class="form-floating">
+            <textarea id="comment" class="form-control" placeholder="Leave a comment here"></textarea>
+            <label for="floatingTextarea2">코멘트</label>
+        </div>
+        <div class="mybtns">
+            <button onclick="posting()" type="button" class="btn btn-dark">기록하기</button>
+            <button onclick="close_box()" type="button" class="btn btn-outline-dark">닫기</button>
+        </div>
+    </div>
+    <div class="mycards">
+        <div class="row row-cols-1 row-cols-md-4 g-4" id="cards-box">
+        </div>
+    </div>
+{% endblock %}

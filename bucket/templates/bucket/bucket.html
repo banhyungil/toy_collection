@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}<title>인생 버킷리스트</title>{% endblock%}
+{% block css %} 
+  <style>
+    @import url('/bucket/static/style.css');
+  </style>
+{% endblock %}
+{% block script %}
+  <script src="/bucket/static/bucket.js"></script>
+{% endblock %}
+  
+{% block content %}
+  <div class="mypic">
+    <h1>나의 버킷리스트</h1>
+  </div>
+  <div class="mybox">
+    <div class="mybucket">
+      <input id="bucket" class="form-control" type="text" placeholder="이루고 싶은 것을 입력하세요">
+      <button onclick="saveBucket()" type="button" class="btn btn-outline-primary">기록하기</button>
+    </div>
+  </div>
+  <div class="mybox" id="bucket-list">
+  </div>
+{% endblock%}
